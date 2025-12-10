@@ -1,6 +1,7 @@
 name: flutter_macos_dock
 description: A Flutter package that replicates the macOS Dock behavior and appearance with extensive customization options.
 version: 0.0.1
+repository: https://github.com/makjac/flutter_macos_dock
 homepage: https://github.com/makjac/flutter_macos_dock
 
 environment:

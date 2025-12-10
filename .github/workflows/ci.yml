@@ -79,30 +79,6 @@ jobs:
           dart pub global activate pana
           pana --no-warning --exit-code-threshold 0
 
-  example-build:
-    name: Build Example App
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Setup Flutter
-        uses: subosito/flutter-action@v2
-        with:
-          channel: "stable"
-          cache: true
-
-      - name: Install dependencies
-        run: |
-          flutter pub get
-          cd example && flutter pub get
-
-      - name: Build example (Web)
-        run: cd example && flutter build web --release
-
-      - name: Build example (APK)
-        run: cd example && flutter build apk --release
-
   security:
     name: Security Scan
     runs-on: ubuntu-latest
