@@ -564,8 +564,7 @@ void main() {
         expect(find.byType(DockIcon), findsNWidgets(2));
       });
 
-      testWidgets('handles magnification with vertical layout',
-          (tester) async {
+      testWidgets('handles magnification with vertical layout', (tester) async {
         const items = [
           DockItem(id: 'test1', icon: Icon(Icons.star)),
           DockItem(id: 'test2', icon: Icon(Icons.home)),
@@ -643,8 +642,7 @@ void main() {
         expect(find.byType(MacDock), findsOneWidget);
       });
 
-      testWidgets('handles multiple icons with magnification',
-          (tester) async {
+      testWidgets('handles multiple icons with magnification', (tester) async {
         const items = [
           DockItem(id: 'test1', icon: Icon(Icons.star)),
           DockItem(id: 'test2', icon: Icon(Icons.home)),
