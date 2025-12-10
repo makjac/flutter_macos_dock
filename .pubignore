@@ -1,0 +1,18 @@
+# Exclude from published package
+.github/
+.vscode/
+.idea/
+.dart_tool/
+build/
+coverage/
+example/.dart_tool/
+example/build/
+*.iml
+*.ipr
+*.iws
+.packages
+pubspec.lock
+example/pubspec.lock
+COMMIT_REQUIREMENTS.md
+COMMIT_COMMANDS.md
+CONTRIBUTING.md
