@@ -4,8 +4,8 @@ version: 0.0.1
 homepage: https://github.com/makjac/flutter_macos_dock
 
 environment:
-  sdk: ^3.10.3
-  flutter: ">=1.17.0"
+  sdk: ^3.5.0
+  flutter: ">=3.24.0"
 
 dependencies:
   flutter:
