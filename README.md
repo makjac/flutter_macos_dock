@@ -1,5 +1,11 @@
 # flutter_macos_dock
 
+[![pub package](https://img.shields.io/pub/v/flutter_macos_dock.svg)](https://pub.dev/packages/flutter_macos_dock)
+[![CI](https://github.com/makjac/flutter_macos_dock/workflows/CI/badge.svg)](https://github.com/makjac/flutter_macos_dock/actions)
+[![codecov](https://codecov.io/gh/makjac/flutter_macos_dock/branch/main/graph/badge.svg)](https://codecov.io/gh/makjac/flutter_macos_dock)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![style: very good analysis](https://img.shields.io/badge/style-very_good_analysis-B22C89.svg)](https://pub.dev/packages/very_good_analysis)
+
 A Flutter package that replicates the macOS Dock behavior and appearance
 with extensive customization options.
 
