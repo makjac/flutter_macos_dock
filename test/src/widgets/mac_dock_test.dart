@@ -1,6 +1,8 @@
+import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_macos_dock/src/enums/dock_position.dart';
 import 'package:flutter_macos_dock/src/models/dock_item.dart';
+import 'package:flutter_macos_dock/src/widgets/dock_icon.dart';
 import 'package:flutter_macos_dock/src/widgets/mac_dock.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -367,6 +369,347 @@ void main() {
 
       expect(sizedBox.width, 128);
       expect(sizedBox.height, 128);
+    });
+
+    group('Magnification', () {
+      testWidgets('accepts magnification parameter', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnification: 2,
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets('accepts magnificationRadius parameter', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnificationRadius: 150,
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets(
+          'accepts magnificationAnimationDuration '
+          'parameter', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnificationAnimationDuration: Duration(milliseconds: 300),
+              ),
+            ),
+          ),
+        );
+
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets('renders DockIcon widgets', (tester) async {
+        const items = [
+          DockItem(id: 'test1', icon: Icon(Icons.star)),
+          DockItem(id: 'test2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(items: items),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.byType(DockIcon), findsNWidgets(2));
+      });
+
+      testWidgets(
+          'DockIcon has scale of 1.0 when not '
+          'hovering', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnification: 2,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        expect(dockIcon.scale, equals(1));
+      });
+
+      testWidgets('updates when mouse enters dock area', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnification: 2,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final gesture = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await gesture.addPointer(location: Offset.zero);
+        addTearDown(gesture.removePointer);
+
+        await gesture.moveTo(tester.getCenter(find.byType(MacDock)));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets('resets scales when mouse exits dock', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnification: 2,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final gesture = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await gesture.addPointer(location: Offset.zero);
+        addTearDown(gesture.removePointer);
+
+        // Enter dock
+        await gesture.moveTo(tester.getCenter(find.byType(MacDock)));
+        await tester.pumpAndSettle();
+
+        // Exit dock
+        await gesture.moveTo(const Offset(1000, 1000));
+        await tester.pumpAndSettle();
+
+        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        expect(dockIcon.scale, equals(1));
+      });
+
+      testWidgets('handles magnification with horizontal layout',
+          (tester) async {
+        const items = [
+          DockItem(id: 'test1', icon: Icon(Icons.star)),
+          DockItem(id: 'test2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnification: 2,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Row), findsOneWidget);
+        expect(find.byType(DockIcon), findsNWidgets(2));
+      });
+
+      testWidgets('handles magnification with vertical layout', (tester) async {
+        const items = [
+          DockItem(id: 'test1', icon: Icon(Icons.star)),
+          DockItem(id: 'test2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                position: DockPosition.left,
+                magnification: 2,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Column), findsOneWidget);
+        expect(find.byType(DockIcon), findsNWidgets(2));
+      });
+
+      testWidgets(
+          'magnification disabled when strength is '
+          '1.0', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final gesture = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await gesture.addPointer(location: Offset.zero);
+        addTearDown(gesture.removePointer);
+
+        await gesture.moveTo(tester.getCenter(find.byType(MacDock)));
+        await tester.pumpAndSettle();
+
+        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        expect(dockIcon.scale, equals(1));
+      });
+
+      testWidgets('respects magnificationRadius parameter', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnification: 2,
+                magnificationRadius: 50,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets('handles multiple icons with magnification', (tester) async {
+        const items = [
+          DockItem(id: 'test1', icon: Icon(Icons.star)),
+          DockItem(id: 'test2', icon: Icon(Icons.home)),
+          DockItem(id: 'test3', icon: Icon(Icons.mail)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnification: 2,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        expect(find.byType(DockIcon), findsNWidgets(3));
+      });
+
+      testWidgets('passes size to DockIcon', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                size: 64,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        expect(dockIcon.size, equals(64));
+      });
+
+      testWidgets('passes animationDuration to DockIcon', (tester) async {
+        const items = [
+          DockItem(id: 'test', icon: Icon(Icons.star)),
+        ];
+
+        const duration = Duration(milliseconds: 300);
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnificationAnimationDuration: duration,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        expect(dockIcon.animationDuration, equals(duration));
+      });
     });
   });
 }

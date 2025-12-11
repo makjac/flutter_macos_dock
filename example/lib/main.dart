@@ -35,6 +35,7 @@ class DockExamplePage extends StatefulWidget {
 class _DockExamplePageState extends State<DockExamplePage> {
   DockPosition _position = DockPosition.bottom;
   double _size = 48;
+  double _magnification = 1.5;
 
   final List<DockItem> _items = const [
     DockItem(
@@ -109,6 +110,7 @@ class _DockExamplePageState extends State<DockExamplePage> {
         items: _items,
         position: _position,
         size: _size,
+        magnification: _magnification,
       ),
     );
   }
@@ -205,6 +207,52 @@ class _DockExamplePageState extends State<DockExamplePage> {
                 ),
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Magnification',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          Row(
+            children: [
+              Expanded(
+                child: Slider(
+                  value: _magnification,
+                  min: 1,
+                  max: 2.5,
+                  divisions: 15,
+                  label: _magnification.toStringAsFixed(1),
+                  onChanged: (value) {
+                    setState(() => _magnification = value);
+                  },
+                ),
+              ),
+              SizedBox(
+                width: 50,
+                child: Text(
+                  '${_magnification.toStringAsFixed(1)}x',
+                  style: const TextStyle(fontSize: 16),
+                  textAlign: TextAlign.center,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: Colors.blue.withValues(alpha: 0.1),
+              borderRadius: BorderRadius.circular(4),
+            ),
+            child: Text(
+              'Hover over the dock to see the magnification effect',
+              style: TextStyle(
+                fontSize: 12,
+                color: Colors.blue[700],
+              ),
+              textAlign: TextAlign.center,
+            ),
           ),
         ],
       ),

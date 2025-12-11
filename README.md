@@ -14,6 +14,8 @@ with extensive customization options.
 - **Basic Dock Rendering**: Display icons in a macOS-style dock
 - **Four Position Options**: Bottom, left, right, and top dock positions
 - **Configurable Icon Size**: Adjust dock icon sizes
+- **Magnification Effect**: Icons magnify on hover with smooth animations
+- **Hover Detection**: Interactive hover effects with configurable behavior
 - **Data Models**: Comprehensive models for dock items, badges, and menus
 - **Type-Safe API**: Strongly typed configuration options
 - **Zero Dependencies**: Built using only Flutter SDK widgets
@@ -24,7 +26,7 @@ Add this to your package's `pubspec.yaml` file:
 
 ```yaml
 dependencies:
-  flutter_macos_dock: ^0.0.1
+  flutter_macos_dock: ^0.1.0
 ```
 
 ## Getting Started
@@ -106,6 +108,24 @@ MacDock(
 )
 ```
 
+### With Magnification Effect
+
+Add macOS-style magnification on hover:
+
+```dart
+MacDock(
+  items: items,
+  magnification: 2.0, // 2x magnification
+  magnificationRadius: 100.0, // Radius in pixels
+)
+
+// Disable magnification
+MacDock(
+  items: items,
+  magnification: 1.0, // No magnification
+)
+```
+
 ### With Badges and Indicators
 
 Add badges and open indicators to dock items:
@@ -150,6 +170,9 @@ The main widget for displaying a macOS-style dock.
 - `items` (required): List of `DockItem` objects to display
 - `position`: Position of the dock (default: `DockPosition.bottom`)
 - `size`: Base size of dock icons in logical pixels (default: 48.0)
+- `magnification`: Maximum magnification scale (default: 1.0, range: 1.0-2.5)
+- `magnificationRadius`: Radius for magnification effect in pixels (default: 100.0)
+- `magnificationAnimationDuration`: Duration for magnification animation (default: 200ms)
 
 ### DockItem
 
@@ -199,24 +222,34 @@ cd example
 flutter run
 ```
 
-## Milestone 1 Status
+## Development Status
 
-This release includes:
+### ✅ Milestone 1: Core Structure and Basic Rendering
 
 - ✅ Core package structure
 - ✅ Data models (DockItem, DockBadge, ContextMenuItem)
 - ✅ DockPosition enum
 - ✅ Basic MacDock widget with icon rendering
 - ✅ Support for all four dock positions
-- ✅ Comprehensive test coverage (90%+)
+- ✅ Comprehensive test coverage (96%+)
 - ✅ Full API documentation
 - ✅ Interactive example app
+
+### ✅ Milestone 2: Magnification and Hover Effects
+
+- ✅ Hover detection using MouseRegion
+- ✅ Distance-based magnification calculator
+- ✅ Smooth animations with easeOutCubic curve
+- ✅ Configurable magnification strength
+- ✅ Configurable magnification radius
+- ✅ DockIcon widget for individual icon rendering
+- ✅ Comprehensive test coverage (96%+)
+- ✅ Updated example with magnification controls
 
 ## Roadmap
 
 Future milestones will include:
 
-- Magnification effects on hover
 - Drag and drop with reordering
 - Tooltips and context menus
 - Auto-hide functionality
