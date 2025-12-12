@@ -1,8 +1,27 @@
+## 0.2.0
+
+### Milestone 3: Drag and Drop with Reordering
+
+* Full drag-and-drop support with threshold detection (4px distance or 150ms hold)
+* Icon reordering with smooth animations
+* Remove items by dragging outside dock bounds
+* Return animation when dropping items
+* Magnification offset calculation to prevent icon overlap
+* Lift effect during magnification (icons move towards cursor)
+* ID-based item tracking for stable reordering
+* DraggableDockIcon widget with pan gesture detection
+* DraggedIconOverlay widget for dragged item rendering
+* ReorderCalculator utility for swap logic
+* Configurable animation durations:
+  * `reorderAnimationDuration` (default 220ms)
+  * `returnAnimationDuration` (default 300ms)
+* `liftStrength` parameter for magnification lift effect (default 0.5)
+* `onReorder` callback for handling reorder events
+* `onRemove` callback for handling item removal
+
 ## 0.1.0
 
 ### Milestone 2: Magnification and Hover Effects
-
-**New Features:**
 
 * Magnification effect with distance-based scaling
 * Hover detection using MouseRegion
@@ -11,17 +30,6 @@
 * Configurable magnification radius (default 100px)
 * MagnificationCalculator utility for scale computation
 * DockIcon widget for individual icon rendering with AnimatedScale
-
-**Improvements:**
-
-* MacDock converted to StatefulWidget for cursor tracking
-* Enhanced example app with magnification controls
-* Improved API documentation with magnification examples
-* Test coverage maintained at 96%+
-
-**Breaking Changes:**
-
-* None - all changes are backward compatible
 
 ## 0.0.1
 
