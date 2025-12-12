@@ -51,10 +51,11 @@ class _TestAppState extends State<TestApp> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               const Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20),
                 child: Text(
                   'Test FINALNE poprawki:\n\n'
-                  '✓ Problem 1: Animacja powrotu - item leci do właściwej pozycji\n'
+                  '✓ Problem 1: Animacja powrotu - item leci do '
+                  'właściwej pozycji\n'
                   '✓ Problem 2: Magnification działa podczas drag\n'
                   '✓ Problem 3: Przesuwanie w prawo działa poprawnie\n'
                   '✓ Bonus: Itemy się rozsuwają podczas magnification',

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_macos_dock/src/widgets/dragged_icon_overlay.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DraggedIconOverlay', () {
@@ -12,7 +12,7 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(100, 100),
-                  size: 48.0,
+                  size: 48,
                   child: Icon(Icons.folder),
                 ),
               ],
@@ -32,7 +32,7 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(150, 200),
-                  size: 48.0,
+                  size: 48,
                   child: Icon(Icons.folder),
                 ),
               ],
@@ -57,7 +57,7 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(100, 100),
-                  size: 64.0,
+                  size: 64,
                   child: Icon(Icons.folder),
                 ),
               ],
@@ -82,7 +82,7 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(100, 100),
-                  size: 48.0,
+                  size: 48,
                   isLifted: true,
                   child: Icon(Icons.folder),
                 ),
@@ -107,7 +107,7 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(100, 100),
-                  size: 48.0,
+                  size: 48,
                   isLifted: true,
                   child: Icon(Icons.folder),
                 ),
@@ -140,7 +140,7 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(100, 100),
-                  size: 48.0,
+                  size: 48,
                   isLifted: true,
                   isRemoving: true,
                   child: Icon(Icons.folder),
@@ -168,9 +168,8 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(100, 100),
-                  size: 48.0,
+                  size: 48,
                   isLifted: true,
-                  isRemoving: false,
                   child: Icon(Icons.folder),
                 ),
               ],
@@ -196,7 +195,7 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(100, 100),
-                  size: 48.0,
+                  size: 48,
                   isLifted: true,
                   initialScale: 1.5,
                   child: Icon(Icons.folder),
@@ -213,7 +212,8 @@ void main() {
         find.byType(AnimatedContainer),
       );
 
-      // Verify transform is applied (initialScale * liftScale = 1.5 * 1.08 = 1.62)
+      // Verify transform is applied
+      // (initialScale * liftScale = 1.5 * 1.08 = 1.62)
       expect(animatedContainer.transform, isNotNull);
     });
 
@@ -225,7 +225,7 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(100, 100),
-                  size: 48.0,
+                  size: 48,
                   child: Icon(Icons.folder),
                 ),
               ],
@@ -252,7 +252,7 @@ void main() {
               children: [
                 DraggedIconOverlay(
                   position: Offset(100, 100),
-                  size: 48.0,
+                  size: 48,
                   child: Icon(Icons.folder),
                 ),
               ],

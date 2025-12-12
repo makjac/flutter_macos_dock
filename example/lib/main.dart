@@ -43,7 +43,7 @@ class _DockExamplePageState extends State<DockExamplePage> {
   int _returnDuration = 300;
   bool _showControls = true;
 
-  List<DockItem> _items = [
+  final List<DockItem> _items = [
     const DockItem(
       id: 'finder',
       icon: Icon(Icons.folder, color: Colors.blue),
@@ -324,8 +324,6 @@ class _DockExamplePageState extends State<DockExamplePage> {
                 Expanded(
                   child: Slider(
                     value: _liftStrength,
-                    min: 0,
-                    max: 1.0,
                     divisions: 20,
                     label: _liftStrength.toStringAsFixed(2),
                     onChanged: (value) {
@@ -471,7 +469,8 @@ class _DockExamplePageState extends State<DockExamplePage> {
                 borderRadius: BorderRadius.circular(4),
               ),
               child: Text(
-                'Hover over the dock to see the magnification effect. Drag icons to reorder.',
+                'Hover over the dock to see the magnification effect. '
+                'Drag icons to reorder.',
                 style: TextStyle(
                   fontSize: 12,
                   color: Colors.blue[700],

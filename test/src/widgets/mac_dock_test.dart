@@ -2,7 +2,6 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_macos_dock/src/enums/dock_position.dart';
 import 'package:flutter_macos_dock/src/models/dock_item.dart';
-import 'package:flutter_macos_dock/src/widgets/dock_icon.dart';
 import 'package:flutter_macos_dock/src/widgets/draggable_dock_icon.dart';
 import 'package:flutter_macos_dock/src/widgets/mac_dock.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -748,7 +747,6 @@ void main() {
 
       testWidgets('calls onReorder when item is reordered', (tester) async {
         int? oldIndex;
-        int? newIndex;
 
         const items = [
           DockItem(id: 'item1', icon: Icon(Icons.star)),
@@ -763,7 +761,6 @@ void main() {
                 items: items,
                 onReorder: (old, updated) {
                   oldIndex = old;
-                  newIndex = updated;
                 },
               ),
             ),
@@ -787,9 +784,6 @@ void main() {
       });
 
       testWidgets('respects onRemove callback', (tester) async {
-        int? removedIndex;
-        DockItem? removedItem;
-
         const items = [
           DockItem(id: 'item1', icon: Icon(Icons.star)),
           DockItem(id: 'item2', icon: Icon(Icons.home)),
@@ -801,8 +795,7 @@ void main() {
               body: MacDock(
                 items: items,
                 onRemove: (index, item) {
-                  removedIndex = index;
-                  removedItem = item;
+                  // Callback would be called when item removed
                 },
               ),
             ),
@@ -996,7 +989,9 @@ void main() {
                           setState(() {
                             items = [
                               const DockItem(
-                                  id: 'item1', icon: Icon(Icons.star)),
+                                id: 'item1',
+                                icon: Icon(Icons.star),
+                              ),
                             ];
                           });
                         },
@@ -1036,7 +1031,7 @@ void main() {
             home: Scaffold(
               body: MacDock(
                 items: items,
-                magnification: 2.0,
+                magnification: 2,
               ),
             ),
           ),
@@ -1105,7 +1100,7 @@ void main() {
               body: MacDock(
                 items: items,
                 position: DockPosition.right,
-                magnification: 2.0,
+                magnification: 2,
               ),
             ),
           ),

@@ -80,7 +80,7 @@ class DraggedIconOverlay extends StatelessWidget {
   /// Duration for return animation.
   final Duration returnDuration;
 
-  static const double _liftHeight = 16.0; // 12-20px range
+  static const double _liftHeight = 16; // 12-20px range
   static const double _liftScale = 1.08; // 1.05-1.10 range
   static const Duration _liftDuration = Duration(milliseconds: 120);
 
@@ -97,9 +97,15 @@ class DraggedIconOverlay extends StatelessWidget {
       child: AnimatedContainer(
         duration: duration,
         curve: Curves.easeOut,
-        transform: Matrix4.identity()
-          ..translate(0.0, (isLifted && !isReturning) ? -_liftHeight : 0.0)
-          ..scale((isLifted && !isReturning) ? initialScale * _liftScale : 1.0),
+        transform: (isLifted && !isReturning)
+            ? (Matrix4.identity()
+              // Using deprecated methods for simplicity
+              // ignore: deprecated_member_use
+              ..translate(0.0, -_liftHeight)
+              // Using deprecated method for simplicity
+              // ignore: deprecated_member_use
+              ..scale(initialScale * _liftScale))
+            : Matrix4.identity(),
         transformAlignment: Alignment.center,
         child: AnimatedOpacity(
           duration: duration,

@@ -11,12 +11,11 @@ import 'package:flutter/material.dart';
 /// ensuring smooth and stable reordering behavior that matches macOS dock
 /// behavior.
 ///
-/// Parameters:
-/// * [iconPositions] - Current positions of all icons
-/// * [iconSize] - Base size of icons
-/// * [draggedIndex] - Index of the currently dragged icon
-/// * [dragPosition] - Current position of the dragged icon
-/// * [lastSwapDirection] - Direction of the last swap for hysteresis
+/// The calculator provides methods to:
+/// - Calculate new icon positions during drag
+/// - Determine swap thresholds with hysteresis
+/// - Compute icon offsets for gap animations
+/// - Detect when drag is outside dock bounds
 ///
 /// References:
 /// * Technical specs: SWAP_THRESHOLD (0.5), HYSTERESIS (0.05)
@@ -99,12 +98,14 @@ class ReorderCalculator {
 
       // Check if dragged icon has crossed the swap threshold
       if (i < draggedIndex) {
-        // Moving left: swap when dragged center crosses left of (target + threshold)
+        // Moving left: swap when dragged center crosses left of
+        // (target + threshold)
         if (draggedCenter <= targetCenter + threshold) {
           return i;
         }
       } else {
-        // Moving right: swap when dragged center crosses right of (target + threshold)
+        // Moving right: swap when dragged center crosses right of
+        // (target + threshold)
         if (draggedCenter >= targetCenter + threshold) {
           return i;
         }
@@ -135,7 +136,7 @@ class ReorderCalculator {
     required double spacing,
   }) {
     // The dragged icon doesn't participate in the gap
-    if (iconIndex == draggedIndex) return 0.0;
+    if (iconIndex == draggedIndex) return 0;
 
     final gapWidth = iconSize + spacing;
 
@@ -152,7 +153,7 @@ class ReorderCalculator {
       }
     }
 
-    return 0.0;
+    return 0;
   }
 
   /// Checks if the dragged icon is outside dock bounds for removal.

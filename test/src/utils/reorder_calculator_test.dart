@@ -275,7 +275,6 @@ void main() {
 
     group('constants', () {
       test('swapThreshold is 0.5', () {
-        const calculator = ReorderCalculator();
         expect(ReorderCalculator.swapThreshold, 0.5);
       });
 

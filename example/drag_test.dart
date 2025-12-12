@@ -14,25 +14,25 @@ class DragTestApp extends StatefulWidget {
 
 class _DragTestAppState extends State<DragTestApp> {
   List<DockItem> items = [
-    DockItem(
+    const DockItem(
       id: 'finder',
-      icon: const Icon(Icons.folder, color: Colors.blue, size: 40),
+      icon: Icon(Icons.folder, color: Colors.blue, size: 40),
     ),
-    DockItem(
+    const DockItem(
       id: 'safari',
-      icon: const Icon(Icons.public, color: Colors.blue, size: 40),
+      icon: Icon(Icons.public, color: Colors.blue, size: 40),
     ),
-    DockItem(
+    const DockItem(
       id: 'messages',
-      icon: const Icon(Icons.message, color: Colors.green, size: 40),
+      icon: Icon(Icons.message, color: Colors.green, size: 40),
     ),
-    DockItem(
+    const DockItem(
       id: 'mail',
-      icon: const Icon(Icons.email, color: Colors.blue, size: 40),
+      icon: Icon(Icons.email, color: Colors.blue, size: 40),
     ),
-    DockItem(
+    const DockItem(
       id: 'calendar',
-      icon: const Icon(Icons.calendar_today, color: Colors.red, size: 40),
+      icon: Icon(Icons.calendar_today, color: Colors.red, size: 40),
     ),
   ];
 
@@ -47,7 +47,7 @@ class _DragTestAppState extends State<DragTestApp> {
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
               const Padding(
-                padding: EdgeInsets.all(20.0),
+                padding: EdgeInsets.all(20),
                 child: Text(
                   'Test Drag-and-Drop Fixes:\n'
                   '✓ Icons now reorder correctly in both directions\n'
@@ -60,8 +60,7 @@ class _DragTestAppState extends State<DragTestApp> {
               const Spacer(),
               MacDock(
                 items: items,
-                size: 48,
-                magnification: 2.0,
+                magnification: 2,
                 onReorder: (oldIndex, newIndex) {
                   setState(() {
                     final item = items.removeAt(oldIndex);

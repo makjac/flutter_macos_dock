@@ -434,7 +434,7 @@ void main() {
             body: DraggableDockIcon(
               item: testItem,
               size: 48,
-              scale: 1.0,
+              scale: 1,
             ),
           ),
         ),
@@ -496,7 +496,6 @@ void main() {
               item: testItem,
               size: 48,
               scale: 1,
-              isDragging: false,
             ),
           ),
         ),
@@ -552,13 +551,13 @@ void main() {
 
     testWidgets('correctly displays item icon', (tester) async {
       const customIcon = Icon(Icons.mail, key: ValueKey('custom-icon'));
-      final customItem = DockItem(
+      const customItem = DockItem(
         id: 'custom',
         icon: customIcon,
       );
 
       await tester.pumpWidget(
-        MaterialApp(
+        const MaterialApp(
           home: Scaffold(
             body: DraggableDockIcon(
               item: customItem,

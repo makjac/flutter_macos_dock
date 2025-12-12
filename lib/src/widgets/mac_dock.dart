@@ -153,6 +153,7 @@ class MacDock extends StatefulWidget {
 class _MacDockState extends State<MacDock> {
   final _cursorPositionNotifier = ValueNotifier<Offset?>(null);
   final _dragInfoNotifier = ValueNotifier<DragInfo?>(null);
+  final GlobalKey _stackKey = GlobalKey();
 
   // Getters and setters for easier access
   Offset? get _cursorPosition => _cursorPositionNotifier.value;
@@ -162,9 +163,8 @@ class _MacDockState extends State<MacDock> {
   set _dragInfo(DragInfo? value) => _dragInfoNotifier.value = value;
 
   final List<GlobalKey> _iconKeys = [];
-  final _reorderCalculator = ReorderCalculator();
+  final _reorderCalculator = const ReorderCalculator();
   String? _lastSwapDirection;
-  final GlobalKey _stackKey = GlobalKey();
 
   @override
   void initState() {
@@ -370,7 +370,7 @@ class _MacDockState extends State<MacDock> {
 
           final iconCenters = _calculateIconCenters();
 
-          // Calculate scales and offsets exactly like in _buildIconsWithMagnification
+          // Calculate scales and offsets
           final scales = MagnificationCalculator.calculateScales(
             cursorPosition: _cursorPosition,
             iconCenters: iconCenters,
@@ -378,10 +378,9 @@ class _MacDockState extends State<MacDock> {
             magnificationRadius: widget.magnificationRadius,
           );
 
-          // Calculate target position matching exact visual position in _buildIconsWithMagnification
-          // During returning, gapOffset is 0, so totalOffset = magnificationOffset
-          final gapOffset =
-              0.0; // _calculateIconOffset returns 0 during returning
+          // Calculate target position matching exact visual position
+          // During returning, gapOffset is 0
+          const gapOffset = 0;
           final magnificationOffset =
               _calculateMagnificationOffset(newIndex, scales);
           final totalOffset = gapOffset + magnificationOffset;
@@ -395,9 +394,8 @@ class _MacDockState extends State<MacDock> {
           final targetLocalCenter = _globalToLocal(targetGlobalCenter);
 
           // Calculate target position (top-left of overlay)
-          // This must match the visual position of the icon including all transforms
-          double targetX = targetLocalCenter.dx - widget.size / 2;
-          double targetY = targetLocalCenter.dy - widget.size / 2;
+          var targetX = targetLocalCenter.dx - widget.size / 2;
+          var targetY = targetLocalCenter.dy - widget.size / 2;
 
           if (_isHorizontal) {
             // Horizontal: magnification offset in X, lift in Y
@@ -416,12 +414,13 @@ class _MacDockState extends State<MacDock> {
           // Calculate current overlay position (where it actually is now)
           // During dragging, overlay position is currentPosition - size/2
           // We need to convert this to top-left for returning state
+          if (savedDragInfo == null) return;
           final currentOverlayPosition = Offset(
-            savedDragInfo!.currentPosition.dx - widget.size / 2,
-            savedDragInfo!.currentPosition.dy - widget.size / 2,
+            savedDragInfo.currentPosition.dx - widget.size / 2,
+            savedDragInfo.currentPosition.dy - widget.size / 2,
           );
 
-          // First, set returning state with CURRENT overlay position (no jump)
+          // First, set returning state with CURRENT overlay position
           _dragInfo = savedDragInfo.copyWith(
             state: DragState.returning,
             currentPosition:
@@ -457,11 +456,11 @@ class _MacDockState extends State<MacDock> {
   }
 
   double _calculateIconOffset(int index) {
-    if (_dragInfo == null) return 0.0;
+    if (_dragInfo == null) return 0;
 
     // Don't show gaps during returning animation
     // List is already reordered, so items are in final positions
-    if (_dragInfo!.state == DragState.returning) return 0.0;
+    if (_dragInfo!.state == DragState.returning) return 0;
 
     // Keep gaps during dragging state
     return _reorderCalculator.calculateIconOffset(
@@ -469,19 +468,18 @@ class _MacDockState extends State<MacDock> {
       draggedIndex: _dragInfo!.draggedIndex,
       targetIndex: _dragInfo!.hoverIndex ?? _dragInfo!.draggedIndex,
       iconSize: widget.size,
-      spacing: 8.0,
+      spacing: 8,
     );
   }
 
-  /// Calculates horizontal displacement for magnified icons to prevent overlap.
+  /// Calculates displacement for magnified icons to prevent overlap.
   ///
-  /// Icons are pushed left or right based on magnification of surrounding icons,
-  /// following macOS dock behavior where magnified icons create space.
+  /// Icons are pushed based on magnification of surrounding icons,
+  /// following macOS dock behavior.
   double _calculateMagnificationOffset(int index, List<double> scales) {
-    if (_cursorPosition == null || widget.magnification <= 1.0) return 0.0;
+    if (_cursorPosition == null || widget.magnification <= 1) return 0;
 
-    double offset = 0.0;
-    final iconCenters = _calculateIconCenters();
+    var offset = 0.0;
 
     // Calculate cumulative offset from all icons
     // Use minimum length to avoid index out of range after reorder
@@ -493,8 +491,9 @@ class _MacDockState extends State<MacDock> {
       if (i == index) continue;
 
       // Skip dragged icon by ID (works even after reorder)
-      if (_dragInfo != null && widget.items[i].id == _dragInfo!.draggedItemId)
+      if (_dragInfo != null && widget.items[i].id == _dragInfo!.draggedItemId) {
         continue;
+      }
 
       final scaleDelta = (scales[i] - 1.0) * widget.size;
 
@@ -640,15 +639,16 @@ class _MacDockState extends State<MacDock> {
                 key: _stackKey,
                 clipBehavior: Clip.none,
                 children: [
-                  _isHorizontal
-                      ? Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: children,
-                        )
-                      : Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: children,
-                        ),
+                  if (_isHorizontal)
+                    Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: children,
+                    )
+                  else
+                    Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: children,
+                    ),
                   if (_buildDragOverlay() != null) _buildDragOverlay()!,
                 ],
               );
