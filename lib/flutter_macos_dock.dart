@@ -8,4 +8,5 @@ export 'src/enums/dock_position.dart';
 export 'src/models/context_menu_item.dart';
 export 'src/models/dock_badge.dart';
 export 'src/models/dock_item.dart';
+export 'src/models/drag_state.dart';
 export 'src/widgets/mac_dock.dart';
