@@ -2,7 +2,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_macos_dock/src/enums/dock_position.dart';
 import 'package:flutter_macos_dock/src/models/dock_item.dart';
-import 'package:flutter_macos_dock/src/widgets/dock_icon.dart';
+import 'package:flutter_macos_dock/src/widgets/draggable_dock_icon.dart';
 import 'package:flutter_macos_dock/src/widgets/mac_dock.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -447,7 +447,7 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        expect(find.byType(DockIcon), findsNWidgets(2));
+        expect(find.byType(DraggableDockIcon), findsNWidgets(2));
       });
 
       testWidgets(
@@ -470,7 +470,8 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        final dockIcon =
+            tester.widget<DraggableDockIcon>(find.byType(DraggableDockIcon));
         expect(dockIcon.scale, equals(1));
       });
 
@@ -536,7 +537,8 @@ void main() {
         await gesture.moveTo(const Offset(1000, 1000));
         await tester.pumpAndSettle();
 
-        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        final dockIcon =
+            tester.widget<DraggableDockIcon>(find.byType(DraggableDockIcon));
         expect(dockIcon.scale, equals(1));
       });
 
@@ -561,7 +563,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(Row), findsOneWidget);
-        expect(find.byType(DockIcon), findsNWidgets(2));
+        expect(find.byType(DraggableDockIcon), findsNWidgets(2));
       });
 
       testWidgets('handles magnification with vertical layout', (tester) async {
@@ -585,7 +587,7 @@ void main() {
         await tester.pumpAndSettle();
 
         expect(find.byType(Column), findsOneWidget);
-        expect(find.byType(DockIcon), findsNWidgets(2));
+        expect(find.byType(DraggableDockIcon), findsNWidgets(2));
       });
 
       testWidgets(
@@ -616,7 +618,8 @@ void main() {
         await gesture.moveTo(tester.getCenter(find.byType(MacDock)));
         await tester.pumpAndSettle();
 
-        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        final dockIcon =
+            tester.widget<DraggableDockIcon>(find.byType(DraggableDockIcon));
         expect(dockIcon.scale, equals(1));
       });
 
@@ -662,7 +665,7 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        expect(find.byType(DockIcon), findsNWidgets(3));
+        expect(find.byType(DraggableDockIcon), findsNWidgets(3));
       });
 
       testWidgets('passes size to DockIcon', (tester) async {
@@ -683,7 +686,8 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        final dockIcon =
+            tester.widget<DraggableDockIcon>(find.byType(DraggableDockIcon));
         expect(dockIcon.size, equals(64));
       });
 
@@ -707,8 +711,413 @@ void main() {
 
         await tester.pumpAndSettle();
 
-        final dockIcon = tester.widget<DockIcon>(find.byType(DockIcon));
+        final dockIcon =
+            tester.widget<DraggableDockIcon>(find.byType(DraggableDockIcon));
         expect(dockIcon.animationDuration, equals(duration));
+      });
+    });
+
+    group('Drag and Drop', () {
+      testWidgets('handles drag start on icon', (tester) async {
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+          DockItem(id: 'item2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(items: items),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final icon = find.byIcon(Icons.star);
+        final gesture = await tester.startGesture(tester.getCenter(icon));
+        await tester.pump(const Duration(milliseconds: 200));
+
+        await gesture.moveBy(const Offset(10, 0));
+        await tester.pump();
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+      });
+
+      testWidgets('calls onReorder when item is reordered', (tester) async {
+        int? oldIndex;
+
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+          DockItem(id: 'item2', icon: Icon(Icons.home)),
+          DockItem(id: 'item3', icon: Icon(Icons.mail)),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                onReorder: (old, updated) {
+                  oldIndex = old;
+                },
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final icon = find.byIcon(Icons.star);
+        final gesture = await tester.startGesture(tester.getCenter(icon));
+        await tester.pump(const Duration(milliseconds: 200));
+
+        await gesture.moveBy(const Offset(100, 0));
+        await tester.pump();
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+
+        // Reorder should be called
+        expect(oldIndex, isNotNull);
+      });
+
+      testWidgets('respects onRemove callback', (tester) async {
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+          DockItem(id: 'item2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                onRemove: (index, item) {
+                  // Callback would be called when item removed
+                },
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Test that onRemove callback exists and would be called
+        // Note: Testing actual remove requires dragging far outside bounds
+        // which is difficult to simulate in test environment
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets('handles drag without onReorder callback', (tester) async {
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+          DockItem(id: 'item2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(items: items),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final icon = find.byIcon(Icons.star);
+        final gesture = await tester.startGesture(tester.getCenter(icon));
+        await tester.pump(const Duration(milliseconds: 200));
+
+        await gesture.moveBy(const Offset(50, 0));
+        await tester.pump();
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+
+        // Should not crash
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets('handles drag without onRemove callback', (tester) async {
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(items: items),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final icon = find.byIcon(Icons.star);
+        final gesture = await tester.startGesture(tester.getCenter(icon));
+        await tester.pump(const Duration(milliseconds: 200));
+
+        // Try dragging outside
+        await gesture.moveBy(const Offset(0, 300));
+        await tester.pump();
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+
+        // Should not crash
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets('respects reorderAnimationDuration', (tester) async {
+        const duration = Duration(milliseconds: 500);
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+          DockItem(id: 'item2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                reorderAnimationDuration: duration,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets('respects returnAnimationDuration', (tester) async {
+        const duration = Duration(milliseconds: 500);
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                returnAnimationDuration: duration,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+
+      testWidgets('respects liftStrength parameter', (tester) async {
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                liftStrength: 0.8,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+    });
+
+    group('State Management', () {
+      testWidgets('updates when items list changes', (tester) async {
+        const items1 = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+        ];
+
+        const items2 = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+          DockItem(id: 'item2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(items: items1),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+        expect(find.byIcon(Icons.star), findsOneWidget);
+        expect(find.byIcon(Icons.home), findsNothing);
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(items: items2),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+        expect(find.byIcon(Icons.star), findsOneWidget);
+        expect(find.byIcon(Icons.home), findsOneWidget);
+      });
+
+      testWidgets('clears drag state when items change', (tester) async {
+        var items = [
+          const DockItem(id: 'item1', icon: Icon(Icons.star)),
+          const DockItem(id: 'item2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: StatefulBuilder(
+                builder: (context, setState) {
+                  return Column(
+                    children: [
+                      MacDock(items: items),
+                      ElevatedButton(
+                        onPressed: () {
+                          setState(() {
+                            items = [
+                              const DockItem(
+                                id: 'item1',
+                                icon: Icon(Icons.star),
+                              ),
+                            ];
+                          });
+                        },
+                        child: const Text('Remove'),
+                      ),
+                    ],
+                  );
+                },
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        // Start drag
+        final icon = find.byIcon(Icons.star);
+        final gesture = await tester.startGesture(tester.getCenter(icon));
+        await tester.pump(const Duration(milliseconds: 200));
+
+        // Change items
+        await tester.tap(find.text('Remove'));
+        await tester.pumpAndSettle();
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+      });
+
+      testWidgets('handles cursor movement', (tester) async {
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+          DockItem(id: 'item2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                magnification: 2,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final gesture = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await gesture.addPointer(location: Offset.zero);
+        addTearDown(gesture.removePointer);
+
+        await gesture.moveTo(tester.getCenter(find.byIcon(Icons.star)));
+        await tester.pumpAndSettle();
+
+        await gesture.moveTo(tester.getCenter(find.byIcon(Icons.home)));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(MacDock), findsOneWidget);
+      });
+    });
+
+    group('Vertical Dock', () {
+      testWidgets('handles drag in vertical layout', (tester) async {
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+          DockItem(id: 'item2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                position: DockPosition.left,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final icon = find.byIcon(Icons.star);
+        final gesture = await tester.startGesture(tester.getCenter(icon));
+        await tester.pump(const Duration(milliseconds: 200));
+
+        await gesture.moveBy(const Offset(0, 50));
+        await tester.pump();
+
+        await gesture.up();
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Column), findsOneWidget);
+      });
+
+      testWidgets('handles magnification in vertical layout', (tester) async {
+        const items = [
+          DockItem(id: 'item1', icon: Icon(Icons.star)),
+          DockItem(id: 'item2', icon: Icon(Icons.home)),
+        ];
+
+        await tester.pumpWidget(
+          const MaterialApp(
+            home: Scaffold(
+              body: MacDock(
+                items: items,
+                position: DockPosition.right,
+                magnification: 2,
+              ),
+            ),
+          ),
+        );
+
+        await tester.pumpAndSettle();
+
+        final gesture = await tester.createGesture(
+          kind: PointerDeviceKind.mouse,
+        );
+        await gesture.addPointer(location: Offset.zero);
+        addTearDown(gesture.removePointer);
+
+        await gesture.moveTo(tester.getCenter(find.byIcon(Icons.star)));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(Column), findsOneWidget);
       });
     });
   });

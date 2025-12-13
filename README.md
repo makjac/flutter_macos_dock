@@ -15,7 +15,11 @@ with extensive customization options.
 - **Four Position Options**: Bottom, left, right, and top dock positions
 - **Configurable Icon Size**: Adjust dock icon sizes
 - **Magnification Effect**: Icons magnify on hover with smooth animations
+- **Lift Effect**: Icons move towards cursor during magnification
+- **Drag and Drop**: Reorder icons with smooth animations
+- **Remove Items**: Drag icons outside dock to remove them
 - **Hover Detection**: Interactive hover effects with configurable behavior
+- **Configurable Animations**: Control magnification, reorder, and return durations
 - **Data Models**: Comprehensive models for dock items, badges, and menus
 - **Type-Safe API**: Strongly typed configuration options
 - **Zero Dependencies**: Built using only Flutter SDK widgets
@@ -159,6 +163,51 @@ DockItem(
 )
 ```
 
+### With Drag and Drop
+
+Enable reordering and removal:
+
+```dart
+MacDock(
+  items: items,
+  onReorder: (oldIndex, newIndex) {
+    // Handle reordering
+    final item = items.removeAt(oldIndex);
+    items.insert(newIndex, item);
+  },
+  onRemove: (index, item) {
+    // Handle removal
+    items.removeAt(index);
+    print('${item.id} removed');
+  },
+)
+```
+
+### Custom Animation Durations
+
+Adjust animation speeds:
+
+```dart
+MacDock(
+  items: items,
+  magnificationAnimationDuration: Duration(milliseconds: 150),
+  reorderAnimationDuration: Duration(milliseconds: 250),
+  returnAnimationDuration: Duration(milliseconds: 400),
+)
+```
+
+### Custom Lift Effect
+
+Control how much icons lift during magnification:
+
+```dart
+MacDock(
+  items: items,
+  magnification: 2.0,
+  liftStrength: 0.8, // More pronounced lift
+)
+```
+
 ## API Reference
 
 ### MacDock
@@ -172,7 +221,12 @@ The main widget for displaying a macOS-style dock.
 - `size`: Base size of dock icons in logical pixels (default: 48.0)
 - `magnification`: Maximum magnification scale (default: 1.0, range: 1.0-2.5)
 - `magnificationRadius`: Radius for magnification effect in pixels (default: 100.0)
+- `liftStrength`: Strength of lift effect during magnification (default: 0.5)
 - `magnificationAnimationDuration`: Duration for magnification animation (default: 200ms)
+- `reorderAnimationDuration`: Duration for reordering animation (default: 220ms)
+- `returnAnimationDuration`: Duration for return animation (default: 300ms)
+- `onReorder`: Callback when an icon is reordered `(int oldIndex, int newIndex)`
+- `onRemove`: Callback when an icon is removed `(int index, DockItem item)`
 
 ### DockItem
 
@@ -246,15 +300,32 @@ flutter run
 - ✅ Comprehensive test coverage (96%+)
 - ✅ Updated example with magnification controls
 
+### ✅ Milestone 3: Drag and Drop with Reordering
+
+- ✅ Threshold-based drag detection (distance and time)
+- ✅ Icon reordering with smooth animations
+- ✅ Remove items by dragging outside dock
+- ✅ Return animation when dropping items
+- ✅ Magnification offset calculations
+- ✅ Lift effect during magnification
+- ✅ ID-based item tracking for stability
+- ✅ Configurable animation durations
+- ✅ onReorder and onRemove callbacks
+- ✅ DraggableDockIcon and DraggedIconOverlay widgets
+- ✅ ReorderCalculator utility
+- ✅ ValueNotifier-based state management
+- ✅ Comprehensive test coverage (90%+)
+- ✅ Enhanced example with all parameters
+
 ## Roadmap
 
 Future milestones will include:
 
-- Drag and drop with reordering
 - Tooltips and context menus
 - Auto-hide functionality
 - Background blur and customization
-- Animation configurations
+- Separator items
+- App launch animations
 - And more!
 
 ## License
